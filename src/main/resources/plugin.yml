@@ -2,3 +2,6 @@ name: PlayerSettingsMenu
 version: '1.0-SNAPSHOT'
 main: me.nuttist.playerSettingsMenu.core.PlayerSettingsMenu
 api-version: '1.21'
+commands:
+  settings:
+    description: A command for players to open their personal settings gui
