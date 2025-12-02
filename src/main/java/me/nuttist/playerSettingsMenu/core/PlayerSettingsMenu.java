@@ -9,6 +9,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -96,6 +97,26 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
         hidePlayers.remove(e.getPlayer());
     }
 
+    @EventHandler
+    public void onDamage(EntityDamageByEntityEvent e) {
+        if (e.getEntity() instanceof Player victim && e.getDamager() instanceof Player attacker) {
+            if( attacker.getPersistentDataContainer().getOrDefault(new NamespacedKey(this, "pvp_enabled"),PersistentDataType.BYTE,(byte)0) == 0){
+                //attacker doesnt have permissions enabled
+                attacker.sendMessage("§4you have PVP disabled");
+                e.setCancelled(true);
+                return;
+            }
+            if( victim.getPersistentDataContainer().getOrDefault(new NamespacedKey(this, "pvp_enabled"),PersistentDataType.BYTE,(byte)0) == 0){
+                //victim doesnt have permissions enabled
+                attacker.sendMessage("§4This player has PVP disabled");
+                e.setCancelled(true);
+                return;
+            }
+
+        }
+    }
+
+
     private void toggleSetting(int slot, Player player, Inventory inventory){
         switch (slot){
             case(12):
@@ -155,6 +176,7 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
             playerToUnhideFrom.showPlayer(this, player);
         }
     }
+
 
     @Override
     public void onDisable() {
