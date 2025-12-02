@@ -1,0 +1,4 @@
+name: PlayerSettingsMenu
+version: '1.0-SNAPSHOT'
+main: me.nuttist.playerSettingsMenu.core.PlayerSettingsMenu
+api-version: '1.21'
