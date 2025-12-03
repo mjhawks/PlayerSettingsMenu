@@ -68,6 +68,10 @@ If future versions add customization options, they will appear here.
 GPLv3 License 
 
 ---
+## ⏳ Planned Features
+- expand to include other server menu related items like starter box
+
+---
 
 ## 🤝 Contributions
 

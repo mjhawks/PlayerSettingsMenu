@@ -5,3 +5,5 @@ api-version: '1.21'
 commands:
   menu:
     description: A command for players to open their personal settings gui
+  unhide:
+    description: A command that allows players to toggle individual player invisibility.

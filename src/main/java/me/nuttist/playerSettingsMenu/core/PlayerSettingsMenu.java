@@ -1,10 +1,13 @@
 package me.nuttist.playerSettingsMenu.core;
 
 import me.nuttist.playerSettingsMenu.commands.menu;
+import me.nuttist.playerSettingsMenu.commands.unhide;
+import me.nuttist.playerSettingsMenu.util.visibleBlackList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,15 +24,18 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.Name;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(PlayerSettingsMenu.class);
     private Logger logger = getLogger();
     private List<Player> hidePlayers;
-
+    private NamespacedKey hideBlackListKey;
     @Override
     public void onEnable() {
 
@@ -38,12 +44,16 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
 
         hidePlayers = new ArrayList<>();
 
+        hideBlackListKey = new NamespacedKey(this,"hide_black_list");
         logger.info("PlayerSettingsMenu by Nuttist has successfully booted up");
 
     }
-
+    public NamespacedKey getHideBlackListKey(){
+        return hideBlackListKey;
+    }
     private void loadCommands() {
         getCommand("menu").setExecutor(new menu(this));
+        getCommand("unhide").setExecutor(new unhide(this, this));
 
     }
 
@@ -75,7 +85,10 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
 
         //hide this player from all players with it enabled
         for (Player player : hidePlayers) {
-            player.hidePlayer(this, p);
+            Set<UUID> ignoredPlayers = visibleBlackList.getVisibleExceptions(player,this);
+            if(!ignoredPlayers.contains(p.getUniqueId())){
+                player.hidePlayer(this, p);
+            }
         }
 
         //check if player has invisible players turned on then add them to the list and hide all players
@@ -136,6 +149,7 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
                     metadata.displayName(Component.text("§4PVP DISABLED"));
                 }
                 item.setItemMeta(metadata);
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f,1.0f);
                 break;
             case(14):
                 //set  player visibility meta data
@@ -158,14 +172,22 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
 
                 }
                 hideplayersitem.setItemMeta(hideplayersmetadata);
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f,1.0f);
                 break;
         }
     }
 
     private void hideAllPlayers(Player playerToHideFrom){
         hidePlayers.add(playerToHideFrom);
+        logger.info(playerToHideFrom.getUniqueId().toString());
+        Set<UUID> ignoredPlayers = visibleBlackList.getVisibleExceptions(playerToHideFrom,this);
+        for(UUID uuid :ignoredPlayers){
+            logger.info(uuid.toString());
+        }
         for (Player player : Bukkit.getOnlinePlayers()){
-            playerToHideFrom.hidePlayer(this, player);
+            if(!ignoredPlayers.contains(player.getUniqueId())){
+                playerToHideFrom.hidePlayer(this, player);
+            }
         }
     }
 
