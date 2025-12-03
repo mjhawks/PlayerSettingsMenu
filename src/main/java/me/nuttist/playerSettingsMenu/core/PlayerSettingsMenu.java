@@ -1,9 +1,8 @@
 package me.nuttist.playerSettingsMenu.core;
 
-import me.nuttist.playerSettingsMenu.commands.settings;
+import me.nuttist.playerSettingsMenu.commands.menu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -44,7 +43,7 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
     }
 
     private void loadCommands() {
-        getCommand("settings").setExecutor(new settings(this));
+        getCommand("menu").setExecutor(new menu(this));
 
     }
 
@@ -102,7 +101,7 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
         if (e.getEntity() instanceof Player victim && e.getDamager() instanceof Player attacker) {
             if( attacker.getPersistentDataContainer().getOrDefault(new NamespacedKey(this, "pvp_enabled"),PersistentDataType.BYTE,(byte)0) == 0){
                 //attacker doesnt have permissions enabled
-                attacker.sendMessage("§4you have PVP disabled");
+                attacker.sendMessage("§4You have PVP disabled");
                 e.setCancelled(true);
                 return;
             }
@@ -116,7 +115,7 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
         }
     }
 
-
+    //add sounds
     private void toggleSetting(int slot, Player player, Inventory inventory){
         switch (slot){
             case(12):
@@ -152,10 +151,10 @@ public final class PlayerSettingsMenu extends JavaPlugin implements Listener {
 
                 if (currentplayersvisible == (byte) 1){
                     hideAllPlayers(player);
-                    hideplayersmetadata.displayName(Component.text("§2Players Hidden"));
+                    hideplayersmetadata.displayName(Component.text("§4Players Hidden"));
                 }else{
                     unhideAllPlayers(player);
-                    hideplayersmetadata.displayName(Component.text("§4Players Visible"));
+                    hideplayersmetadata.displayName(Component.text("§2Players Visible"));
 
                 }
                 hideplayersitem.setItemMeta(hideplayersmetadata);
